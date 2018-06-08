@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package main;
+
+// 城市实体
+message City {
+
+    int32 cityId = 1;// 城市编号
+
+    string cityName = 2;// 城市名称
+
+}
