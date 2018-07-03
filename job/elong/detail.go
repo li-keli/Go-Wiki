@@ -60,6 +60,11 @@ type Detail struct {
 }
 
 func getHotelDetail(hotel Hotel) {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Printf("panic 检索异常 -> %s", err)
+		}
+	}()
 	var (
 		err            error
 		hotelCode      = string([]byte(strconv.Itoa(hotel.HotelId)))
@@ -76,6 +81,7 @@ func getHotelDetail(hotel Hotel) {
 
 	if req.StatusCode != 200 {
 		log.Printf("响应码:%d, 酒店%s详情检索失败", req.StatusCode, hotelCode)
+		DbChan <- Detail{HotelCode: hotel.HotelId}
 		return
 	}
 
@@ -87,8 +93,6 @@ func getHotelDetail(hotel Hotel) {
 	if err != nil {
 		log.Printf("xml反序列化异常 -> %s", err.Error())
 	}
-
-	log.Printf("酒店详情 -> %v", details.Detail)
 
 	for _, det := range details.Detail {
 		det.HotelCode = hotel.HotelId

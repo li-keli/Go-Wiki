@@ -19,7 +19,7 @@ type Hotel struct {
 	Status  int `xml:"Status,attr"`
 }
 
-var xmlAddress = "/Users/likeli/Product/Go/src/test/job/elong/hotellist.xml"
+var xmlAddress = "hotellist.xml"
 
 func readAllHotelId() (hotel []Hotel) {
 	content, err := ioutil.ReadFile(xmlAddress)
