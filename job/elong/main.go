@@ -26,3 +26,8 @@ func do(hotels []Hotel) {
 		getHotelDetail(hotel)
 	}
 }
+
+func checkError(info string, args ...interface{}) {
+	log.Printf(info, args)
+	panic(args)
+}

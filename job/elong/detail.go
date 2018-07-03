@@ -62,7 +62,7 @@ type Detail struct {
 func getHotelDetail(hotel Hotel) {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Printf("panic 检索异常 -> %s", err)
+			log.Printf("getHotelDetail panic 检索异常 -> %s", err)
 		}
 	}()
 	var (
@@ -76,22 +76,22 @@ func getHotelDetail(hotel Hotel) {
 	req, err := http.Get(hotelDetailUrl)
 	defer req.Body.Close()
 	if err != nil {
-		log.Printf("获取响应异常 -> %s", err.Error())
+		checkError("获取响应异常 -> %s", err.Error())
 	}
 
 	if req.StatusCode != 200 {
-		log.Printf("响应码:%d, 酒店%s详情检索失败", req.StatusCode, hotelCode)
 		DbChan <- Detail{HotelCode: hotel.HotelId}
+		checkError("响应码:%d, 酒店%s详情检索失败", req.StatusCode, hotelCode)
 		return
 	}
 
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
-		log.Printf("字节转文本异常 -> %s", err.Error())
+		checkError("字节转文本异常 -> %s", err.Error())
 	}
 	err = xml.Unmarshal(body, &details)
 	if err != nil {
-		log.Printf("xml反序列化异常 -> %s", err.Error())
+		checkError("xml反序列化异常 -> %s", err.Error())
 	}
 
 	for _, det := range details.Detail {
