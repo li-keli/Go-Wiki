@@ -64,6 +64,7 @@ func getHotelDetail(hotel Hotel) {
 		if err := recover(); err != nil {
 			log.Printf("getHotelDetail panic 检索异常 -> %s", err)
 		}
+		<-maxChan
 	}()
 	var (
 		err            error

@@ -2,13 +2,13 @@ package main
 
 import (
 	"log"
-	"sync"
 	"time"
+	"net/http"
 )
 
 var (
-	wait    sync.WaitGroup
 	mysqlDb DbMysql
+	maxChan = make(chan int, 100)
 )
 
 func main() {
@@ -16,23 +16,17 @@ func main() {
 	go mysqlDb.init()
 	time.Sleep(3 * time.Second)
 
-	go do(hotels[:30000])
-	go do(hotels[30000:60000])
-	go do(hotels[60000:])
 
-	log.Println("wating...")
-	wait.Wait()
-
-	log.Println("job 完成")
-}
-
-func do(hotels []Hotel) {
-	wait.Add(1)
 	for index, hotel := range hotels {
 		log.Printf("检索索引 -> %d, 酒店编号 -> %d", index, hotel.HotelId)
-		getHotelDetail(hotel)
+		maxChan <- 1
+		go getHotelDetail(hotel)
 	}
-	wait.Done()
+
+	req, _ := http.Get("https://sc.ftqq.com/SCU26858T43a625a0d78cdf7ad88844fc6b2047b35b05149cf0fd7.send?text=艺龙全量酒店同步完成")
+	defer req.Body.Close()
+
+	log.Println("job 艺龙全量酒店同步完成")
 }
 
 func checkError(info string, args ...interface{}) {
